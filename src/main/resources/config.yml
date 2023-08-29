@@ -1,0 +1,11 @@
+command: ctc
+texts:
+  - x: 1.0
+    y: 79.0
+    z: -6.0
+    level: world
+    lines:
+      - "{x}"
+      - "{y}"
+      - "{z}"
+    enable_tips_variable: true

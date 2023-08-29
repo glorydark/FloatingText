@@ -1,0 +1,9 @@
+name: FloatingText
+main: glorydark.floatingtext.FloatingTextMain
+author: glorydark
+version: "{pom.version}"
+description: FloatingText
+api: "1.0.0"
+load: POSTWORLD
+softdepend:
+  - Tips
