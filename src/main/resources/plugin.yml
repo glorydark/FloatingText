@@ -7,3 +7,4 @@ api: "1.0.0"
 load: POSTWORLD
 softdepend:
   - Tips
+  - MemoriesOfTime-GameCore

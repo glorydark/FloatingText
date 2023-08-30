@@ -6,9 +6,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import tip.utils.Api;
 
 public class TextEntityWithTipsVariable extends TextEntity {
-    protected Player owner;
-
-    protected TextEntityData data;
 
     public TextEntityWithTipsVariable(FullChunk chunk, CompoundTag nbt, Player owner, TextEntityData data) {
         super(chunk, nbt, owner, data);

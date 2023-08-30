@@ -15,6 +15,7 @@ import cn.nukkit.utils.Config;
 import glorydark.floatingtext.command.FloatingTextCommand;
 import glorydark.floatingtext.entity.TextEntity;
 import glorydark.floatingtext.entity.TextEntityData;
+import glorydark.floatingtext.forms.FormFactory;
 import glorydark.floatingtext.utils.Tools;
 
 import java.util.ArrayList;
@@ -31,6 +32,10 @@ public class FloatingTextMain extends PluginBase implements Listener {
 
     public static FloatingTextMain getInstance() {
         return instance;
+    }
+
+    public static String getPath() {
+        return path;
     }
 
     public void onLoad() {
@@ -80,15 +85,19 @@ public class FloatingTextMain extends PluginBase implements Listener {
     }
 
     public void loadAll() {
+        this.loadAll(true);
+    }
+
+    public void loadAll(boolean bool) {
         for (Level level : Server.getInstance().getLevels().values()) {
             for (Entity e : level.getEntities()) {
                 if (e instanceof TextEntity) {
-                    e.despawnFrom(((TextEntity) e).getOwner());
                     e.kill();
                     e.close();
                 }
             }
         }
+        this.textEntitiesDataList = new ArrayList<>();
         Config config = new Config(path + "/config.yml", Config.YAML);
         this.command = config.getString("command", "ctc");
         List<Map<String, Object>> list = config.get("texts", new ArrayList<>());
@@ -96,14 +105,20 @@ public class FloatingTextMain extends PluginBase implements Listener {
             Location location = new Location((Double) map.get("x"), (Double) map.get("y"), (Double) map.get("z"), Server.getInstance().getLevelByName((String) map.get("level")));
             if (location.isValid()) {
                 TextEntityData data = new TextEntityData(location, Tools.castList(map.getOrDefault("lines", new ArrayList<>()), String.class), (Boolean) map.getOrDefault("enable_tips_variable", true));
-                if (data.isEnableTipsVariable() && tipsLoaded) {
-                    this.textEntitiesDataList.add(data);
-                    this.getLogger().info("§aLoad floating text at §e" + location);
+                if (!tipsLoaded && data.isEnableTipsVariable()) {
+                    if (bool) {
+                        this.getLogger().info("§cFailed to load floating text at §e" + location + "§c. Caused by: Tips is not loaded when enabling tips variables!");
+                    }
                 } else {
-                    this.getLogger().info("§cFailed to load floating text at §e" + location + "§c. Caused by: Tips is not loaded when enabling tips variables!");
+                    this.textEntitiesDataList.add(data);
+                    if (bool) {
+                        this.getLogger().info("§aLoad floating text at §e" + location);
+                    }
                 }
             } else {
-                this.getLogger().info("§cFailed to load floating text at §e" + location);
+                if (bool) {
+                    this.getLogger().info("§cFailed to load floating text at §e" + location);
+                }
             }
         }
         for (TextEntityData textEntityData : this.textEntitiesDataList) {
@@ -126,22 +141,25 @@ public class FloatingTextMain extends PluginBase implements Listener {
 
     @EventHandler
     public void PlayerJoinEvent(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
         for (TextEntityData textEntityData : this.textEntitiesDataList) {
             if (textEntityData.isEnableTipsVariable()) {
-                textEntityData.spawnTipsVariableFloatingTextTo(event.getPlayer());
+                textEntityData.spawnTipsVariableFloatingTextTo(player);
             }
         }
     }
 
     @EventHandler
     public void PlayerQuitEvent(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
         for (Level value : Server.getInstance().getLevels().values()) {
             for (Entity entity : value.getEntities()) {
-                if ((entity instanceof TextEntity) && ((TextEntity) entity).getOwner() == event.getPlayer()) {
+                if ((entity instanceof TextEntity) && ((TextEntity) entity).getOwner() == player) {
                     entity.kill();
                     entity.close();
                 }
             }
         }
+        FormFactory.editPlayerCaches.remove(player);
     }
 }
