@@ -9,6 +9,8 @@ public class TextEntity extends Entity {
     protected Player owner;
     protected TextEntityData data;
 
+    protected String WaitingForEditString = "待编辑...";
+
     public TextEntity(FullChunk chunk, CompoundTag nbt, Player owner, TextEntityData data) {
         super(chunk, nbt);
         this.data = data;
@@ -21,14 +23,23 @@ public class TextEntity extends Entity {
 
     @Override
     public boolean onUpdate(int currentTick) {
-        if (this.getNameTag().equals("待编辑...") && this.getNameTag().replace(" ", "").equals("")) {
-            this.setNameTag("待编辑...");
+        String replaceText = data.getText();
+        boolean noString = replaceText.equals(TextEntityData.NO_STRING_TEXT);
+        if (!this.getNameTag().equals(WaitingForEditString) && noString) {
+            this.setNameTag(WaitingForEditString);
         } else {
-            if (!this.getNameTag().equals(data.getText())) {
-                this.setNameTag(data.getText());
+            if (noString) {
+                return false;
             }
+            replaceText(replaceText);
         }
         return super.onUpdate(currentTick);
+    }
+
+    public void replaceText(String replaceText){
+        if (!this.getNameTag().equals(replaceText)) {
+            this.setNameTag(replaceText);
+        }
     }
 
     protected void initEntity() {

@@ -11,6 +11,7 @@ public class TextEntityData {
     protected List<String> lines;
     protected String replacedText;
     protected boolean enableTipsVariable;
+    public static String NO_STRING_TEXT = "";
 
     public TextEntityData(Location location, List<String> lines, boolean enableTipsVariable) {
         this.location = location;
@@ -28,7 +29,7 @@ public class TextEntityData {
 
     public void setLines(List<String> lines) {
         this.lines = lines;
-        StringBuilder text = new StringBuilder();
+        StringBuilder text = new StringBuilder(NO_STRING_TEXT);
         if (lines.size() > 0) {
             for (int i = 0; i < lines.size(); i++) {
                 text.append(lines.get(i));
