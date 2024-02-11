@@ -49,6 +49,7 @@ public class FormFactory {
 
     public static void showCreateInfo(Player player) {
         AdvancedFormWindowCustom custom = new AdvancedFormWindowCustom("创建浮空字");
+        custom.addElement(new ElementInput("名称"));
         custom.addElement(new ElementInput("x", "", String.valueOf(player.getX())));
         custom.addElement(new ElementInput("y", "", String.valueOf(player.getY())));
         custom.addElement(new ElementInput("z", "", String.valueOf(player.getZ())));
@@ -58,11 +59,12 @@ public class FormFactory {
             Config config = new Config(FloatingTextMain.getPath() + "/config.yml", Config.YAML);
             List<Map<String, Object>> maps = new ArrayList<>(config.get("texts", new ArrayList<>()));
             Map<String, Object> map = new HashMap<>();
-            map.put("x", Double.parseDouble(custom.getResponse().getInputResponse(0)));
-            map.put("y", Double.parseDouble(custom.getResponse().getInputResponse(1)));
-            map.put("z", Double.parseDouble(custom.getResponse().getInputResponse(2)));
-            map.put("level", custom.getResponse().getInputResponse(3));
-            map.put("enable_tips_variable", custom.getResponse().getToggleResponse(4));
+            map.put("name", custom.getResponse().getInputResponse(0));
+            map.put("x", Double.parseDouble(custom.getResponse().getInputResponse(1)));
+            map.put("y", Double.parseDouble(custom.getResponse().getInputResponse(2)));
+            map.put("z", Double.parseDouble(custom.getResponse().getInputResponse(3)));
+            map.put("level", custom.getResponse().getInputResponse(4));
+            map.put("enable_tips_variable", custom.getResponse().getToggleResponse(5));
             maps.add(map);
             config.set("texts", maps);
             config.save();
@@ -84,7 +86,11 @@ public class FormFactory {
             return;
         }
         for (Map<String, Object> map : keys) {
-            simple.addButton(new ElementButton(map.get("x") + ":" + map.get("y") + ":" + map.get("z")));
+            if (map.containsKey("name")) {
+                simple.addButton(new ElementButton((String) map.get("name")));
+            } else {
+                simple.addButton(new ElementButton(map.get("x") + ":" + map.get("y") + ":" + map.get("z")));
+            }
         }
         simple.onClicked((elementButton, simpleResponsePlayer) -> {
             int editId = simple.getResponse().getClickedButtonId();
@@ -223,6 +229,7 @@ public class FormFactory {
                             + "\n您当前所在世界" + player.getLevel().getName()
             ));
             custom.addElement(new ElementToggle("是否删除", false));
+            custom.addElement(new ElementInput("名称", "", (String) map.getOrDefault("name", "")));
             custom.addElement(new ElementInput("x", "", String.valueOf(map.get("x"))));
             custom.addElement(new ElementInput("y", "", String.valueOf(map.get("y"))));
             custom.addElement(new ElementInput("z", "", String.valueOf(map.get("z"))));
@@ -231,7 +238,7 @@ public class FormFactory {
             custom.onResponded((formResponseCustom, i) -> {
                 if (custom.getResponse().getToggleResponse(1)) {
                     maps.remove(id);
-                    editPlayerCaches.remove(id);
+                    editPlayerCaches.remove(player);
                     showReturnMenu(player, "§a删除成功！", modalResponsePlayer -> showEditChoice(player, id));
                     List<Map.Entry<Player, Integer>> entries = new ArrayList<>(editPlayerCaches.entrySet());
                     editPlayerCaches.clear();
@@ -243,11 +250,12 @@ public class FormFactory {
                     }
                 } else {
                     if (editPlayerCaches.get(player) == id) {
-                        map.put("x", Double.parseDouble(custom.getResponse().getInputResponse(2)));
-                        map.put("y", Double.parseDouble(custom.getResponse().getInputResponse(3)));
-                        map.put("z", Double.parseDouble(custom.getResponse().getInputResponse(4)));
-                        map.put("level", custom.getResponse().getInputResponse(5));
-                        map.put("enable_tips_variable", custom.getResponse().getToggleResponse(6));
+                        map.put("name", custom.getResponse().getInputResponse(2));
+                        map.put("x", Double.parseDouble(custom.getResponse().getInputResponse(3)));
+                        map.put("y", Double.parseDouble(custom.getResponse().getInputResponse(4)));
+                        map.put("z", Double.parseDouble(custom.getResponse().getInputResponse(5)));
+                        map.put("level", custom.getResponse().getInputResponse(6));
+                        map.put("enable_tips_variable", custom.getResponse().getToggleResponse(7));
                         maps.set(id, map);
                         showReturnMenu(player, "§a保存成功！", modalResponsePlayer -> showEditChoice(player, id));
                     } else {

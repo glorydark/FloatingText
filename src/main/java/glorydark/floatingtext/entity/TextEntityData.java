@@ -7,13 +7,16 @@ import cn.nukkit.level.Location;
 import java.util.List;
 
 public class TextEntityData {
+
+    protected String name;
     protected Location location;
     protected List<String> lines;
     protected String replacedText;
     protected boolean enableTipsVariable;
     public static String NO_STRING_TEXT = "";
 
-    public TextEntityData(Location location, List<String> lines, boolean enableTipsVariable) {
+    public TextEntityData(String name, Location location, List<String> lines, boolean enableTipsVariable) {
+        this.name = name;
         this.location = location;
         this.enableTipsVariable = enableTipsVariable;
         setLines(lines);
@@ -61,5 +64,9 @@ public class TextEntityData {
 
     public boolean isEnableTipsVariable() {
         return enableTipsVariable;
+    }
+
+    public String getName() {
+        return name;
     }
 }

@@ -27,14 +27,16 @@ public class FloatingTextCommand extends Command {
                     FloatingTextMain.getInstance().loadAll();
                     commandSender.sendMessage("§aReload successfully!");
                     break;
-                case "add":
-                    if (commandSender.isPlayer() && strings.length >= 2 && commandSender.isPlayer()) {
+                case "add": // ctc add name text enabletips
+                    if (commandSender.isPlayer() && strings.length >= 3 && commandSender.isPlayer()) {
+                        String name = strings[1];
+                        String text = strings[2];
                         boolean enableTipsVariable = true;
-                        if (strings.length == 3) {
-                            enableTipsVariable = Boolean.parseBoolean(strings[2]);
+                        if (strings.length == 4) {
+                            enableTipsVariable = Boolean.parseBoolean(strings[3]);
                         }
                         Player player = (Player) commandSender;
-                        TextEntityData data = new TextEntityData(player, new ArrayList<>(Arrays.asList(strings[1].split("\\n"))), enableTipsVariable);
+                        TextEntityData data = new TextEntityData(name, player, new ArrayList<>(Arrays.asList(text.split("\\n"))), enableTipsVariable);
                         FloatingTextMain.getInstance().addFloatingText(data);
                         commandSender.sendMessage("§a成功添加浮空字至 " + player.getX() + "," + player.getY() + "," + player.getZ() + "," + player.getLevel().getName());
                         for (Player value : Server.getInstance().getOnlinePlayers().values()) {
