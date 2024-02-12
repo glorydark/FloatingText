@@ -2,8 +2,10 @@ package glorydark.floatingtext.entity;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.RemoveEntityPacket;
 
 public class TextEntity extends Entity {
     protected Player owner;
@@ -52,5 +54,29 @@ public class TextEntity extends Entity {
 
     public Player getOwner() {
         return this.owner;
+    }
+
+    @Override
+    public void spawnTo(Player player) {
+        if (this.getNetworkId() == 64) {
+            super.spawnTo(player);
+        }
+        if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.usedChunks.containsKey(Level.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
+            this.hasSpawned.put(player.getLoaderId(), player);
+            player.dataPacket(this.createAddEntityPacket());
+        }
+    }
+
+    @Override
+    public void despawnFrom(Player player) {
+        if (this.getNetworkId() == 64) {
+            super.despawnFrom(player);
+        }
+        if (this.hasSpawned.containsKey(player.getLoaderId())) {
+            RemoveEntityPacket pk = new RemoveEntityPacket();
+            pk.eid = this.getId();
+            player.dataPacket(pk);
+            this.hasSpawned.remove(player.getLoaderId());
+        }
     }
 }
