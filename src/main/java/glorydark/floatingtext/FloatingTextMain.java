@@ -6,6 +6,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.level.ChunkUnloadEvent;
 import cn.nukkit.event.player.PlayerJoinEvent;
 import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.level.Level;
@@ -162,5 +163,14 @@ public class FloatingTextMain extends PluginBase implements Listener {
             }
         }
         FormFactory.editPlayerCaches.remove(player);
+    }
+
+    @EventHandler
+    public void onChunkUnload(ChunkUnloadEvent event) {
+        for (Entity entity : event.getChunk().getEntities().values()) {
+            if (entity instanceof TextEntity) {
+                event.setCancelled(true);
+            }
+        }
     }
 }
