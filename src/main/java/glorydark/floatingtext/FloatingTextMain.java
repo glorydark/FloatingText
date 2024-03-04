@@ -64,7 +64,9 @@ public class FloatingTextMain extends PluginBase implements Listener {
                         if (entity instanceof TextEntity) {
                             if (entity instanceof TextEntityWithTipsVariable) {
                                 TextEntityWithTipsVariable textEntity = (TextEntityWithTipsVariable) entity;
-                                textEntity.replaceText();
+                                textEntity.replaceTipVariable();
+                            } else {
+                                entity.setNameTag(((TextEntity) entity).getData().getText());
                             }
                         }
                     }

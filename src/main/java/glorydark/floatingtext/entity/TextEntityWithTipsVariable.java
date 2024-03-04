@@ -21,7 +21,7 @@ public class TextEntityWithTipsVariable extends TextEntity {
         return this.owner;
     }
 
-    public void replaceText() {
+    public void replaceTipVariable() {
         String replaceText = this.getData().getText();
         if (replaceText.equals("")) {
             return;
