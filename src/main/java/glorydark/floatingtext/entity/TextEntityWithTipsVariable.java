@@ -17,16 +17,15 @@ public class TextEntityWithTipsVariable extends TextEntity {
         }
     }
 
-    public boolean onUpdate(int currentTick) {
-        return super.onUpdate(currentTick);
-    }
-
     public Player getOwner() {
         return this.owner;
     }
 
-    @Override
-    public void replaceText(String replaceText) {
+    public void replaceText() {
+        String replaceText = this.getData().getText();
+        if (replaceText.equals("")) {
+            return;
+        }
         this.setNameTag(Api.strReplace(this.data.getText(), this.owner));
     }
 }

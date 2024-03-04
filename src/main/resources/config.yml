@@ -1,4 +1,5 @@
 command: ctc
+tips_variable_refresh_millis: 500 # ms
 texts:
   - x: 1.0
     y: 79.0

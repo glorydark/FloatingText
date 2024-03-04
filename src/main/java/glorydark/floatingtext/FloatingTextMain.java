@@ -12,10 +12,12 @@ import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.plugin.PluginBase;
+import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.Config;
 import glorydark.floatingtext.command.FloatingTextCommand;
 import glorydark.floatingtext.entity.TextEntity;
 import glorydark.floatingtext.entity.TextEntityData;
+import glorydark.floatingtext.entity.TextEntityWithTipsVariable;
 import glorydark.floatingtext.forms.FormFactory;
 import glorydark.floatingtext.utils.Tools;
 
@@ -54,6 +56,21 @@ public class FloatingTextMain extends PluginBase implements Listener {
         this.loadAll();
         this.getServer().getPluginManager().registerEvents(this, this);
         this.getServer().getCommandMap().register("", new FloatingTextCommand(this.command));
+        this.getServer().getScheduler().scheduleRepeatingTask(this, new AsyncTask() {
+            @Override
+            public void onRun() {
+                for (Level level : Server.getInstance().getLevels().values()) {
+                    for (Entity entity : level.getEntities()) {
+                        if (entity instanceof TextEntity) {
+                            if (entity instanceof TextEntityWithTipsVariable) {
+                                TextEntityWithTipsVariable textEntity = (TextEntityWithTipsVariable) entity;
+                                textEntity.replaceText();
+                            }
+                        }
+                    }
+                }
+            }
+        }, 1, true);
         this.getLogger().info("FloatingText onEnable");
     }
 

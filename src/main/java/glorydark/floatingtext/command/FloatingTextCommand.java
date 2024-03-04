@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.utils.TextFormat;
 import glorydark.floatingtext.FloatingTextMain;
 import glorydark.floatingtext.entity.TextEntityData;
 import glorydark.floatingtext.forms.FormFactory;
@@ -51,7 +52,7 @@ public class FloatingTextCommand extends Command {
                     if (commandSender.isPlayer() && commandSender.isOp() && Server.getInstance().getPluginManager().getPlugin("MemoriesOfTime-GameCore") != null) {
                         FormFactory.showAdminMain((Player) commandSender);
                     } else {
-                        commandSender.sendMessage("请先启用MemoriesOfTime-GameCore！");
+                        commandSender.sendMessage(TextFormat.RED + "Can not find the soft-depend: MemoriesOfTime-GameCore");
                     }
                     break;
             }
