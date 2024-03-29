@@ -6,7 +6,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.event.level.ChunkUnloadEvent;
 import cn.nukkit.event.player.PlayerJoinEvent;
 import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.level.Level;
@@ -80,7 +79,7 @@ public class FloatingTextMain extends PluginBase implements Listener {
         for (Level level : Server.getInstance().getLevels().values()) {
             for (Entity e : level.getEntities()) {
                 if (e instanceof TextEntity) {
-                    e.kill();
+                    e.despawnFromAll();
                     e.close();
                 }
             }
@@ -113,7 +112,7 @@ public class FloatingTextMain extends PluginBase implements Listener {
         for (Level level : Server.getInstance().getLevels().values()) {
             for (Entity e : level.getEntities()) {
                 if (e instanceof TextEntity) {
-                    e.kill();
+                    e.despawnFromAll();
                     e.close();
                 }
             }
@@ -175,21 +174,12 @@ public class FloatingTextMain extends PluginBase implements Listener {
         Player player = event.getPlayer();
         for (Level value : Server.getInstance().getLevels().values()) {
             for (Entity entity : value.getEntities()) {
-                if ((entity instanceof TextEntity) && ((TextEntity) entity).getOwner() == player) {
+                if ((entity instanceof TextEntityWithTipsVariable) && ((TextEntity) entity).getOwner() == player) {
                     entity.kill();
                     entity.close();
                 }
             }
         }
         FormFactory.editPlayerCaches.remove(player);
-    }
-
-    @EventHandler
-    public void onChunkUnload(ChunkUnloadEvent event) {
-        for (Entity entity : event.getChunk().getEntities().values()) {
-            if (entity instanceof TextEntity) {
-                event.setCancelled(true);
-            }
-        }
     }
 }

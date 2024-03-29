@@ -5,6 +5,9 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 public class TextEntity extends Entity {
     protected Player owner;
     protected TextEntityData data;
@@ -35,5 +38,17 @@ public class TextEntity extends Entity {
 
     public TextEntityData getData() {
         return data;
+    }
+
+    @Override
+    public boolean onUpdate(int currentTick) {
+        for (Map.Entry<Integer, Player> entry : new ArrayList<>(this.hasSpawned.entrySet())) {
+            Player player = entry.getValue();
+            if (!player.isOnline() || player.getLevel() != this.getLevel()) {
+                this.despawnFrom(player);
+                this.hasSpawned.remove(entry.getKey());
+            }
+        }
+        return super.onUpdate(currentTick);
     }
 }
