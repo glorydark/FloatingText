@@ -58,6 +58,26 @@ public class FloatingTextMain extends PluginBase implements Listener {
         this.getServer().getScheduler().scheduleRepeatingTask(this, new AsyncTask() {
             @Override
             public void onRun() {
+                for (TextEntityData textEntityData : textEntitiesDataList) {
+                    Location location = textEntityData.getLocation();
+                    Level level = location.getLevel();
+                    boolean hasSpawned = false;
+                    for (Entity entity : level.getEntities()) {
+                        if (entity.distance(location) < 1) {
+                            hasSpawned = true;
+                            break;
+                        }
+                    }
+                    if (!hasSpawned) {
+                        if (textEntityData.isEnableTipsVariable()) {
+                            for (Player value : Server.getInstance().getOnlinePlayers().values()) {
+                                textEntityData.spawnTipsVariableFloatingTextTo(value);
+                            }
+                        } else {
+                            textEntityData.spawnSimpleFloatingText();
+                        }
+                    }
+                }
                 for (Level level : Server.getInstance().getLevels().values()) {
                     for (Entity entity : level.getEntities()) {
                         if (entity instanceof TextEntity) {

@@ -51,4 +51,9 @@ public class TextEntity extends Entity {
         }
         return super.onUpdate(currentTick);
     }
+
+    @Override
+    public boolean canBeSavedWithChunk() {
+        return false;
+    }
 }
