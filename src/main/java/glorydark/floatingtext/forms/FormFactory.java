@@ -79,7 +79,7 @@ public class FormFactory {
         Config config = new Config(FloatingTextMain.getPath() + "/config.yml", Config.YAML);
         List<Map<String, Object>> keys = new ArrayList<>(config.get("texts", new ArrayList<>()));
         AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple("编辑浮空字 - 编辑列表", "请选择你要编辑的浮空字");
-        if (keys.size() == 0) {
+        if (keys.isEmpty()) {
             simple.setContent("暂无浮空字，请先创建！");
             simple.onClosed(FormFactory::showAdminMain);
             simple.showToPlayer(player);
