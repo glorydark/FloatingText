@@ -23,7 +23,7 @@ public class TextEntityWithTipsVariable extends TextEntity {
 
     public void replaceTipVariable() {
         String replaceText = this.getData().getText();
-        if (replaceText.equals("")) {
+        if (replaceText.isEmpty()) {
             return;
         }
         this.setNameTag(Api.strReplace(this.data.getText(), this.owner));

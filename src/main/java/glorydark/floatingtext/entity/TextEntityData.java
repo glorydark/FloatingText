@@ -4,9 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.FullChunk;
-import glorydark.floatingtext.FloatingTextMain;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class TextEntityData {
@@ -53,23 +51,15 @@ public class TextEntityData {
 
     public void spawnTipsVariableFloatingTextTo(Player player) {
         if (enableTipsVariable) {
-            if (!this.location.isValid()) {
+            if (!this.location.isValid() || location.getLevel().getPlayers().isEmpty()) {
                 return;
             }
             FullChunk chunk = this.location.getChunk();
             if (chunk == null || !chunk.isLoaded() || chunk.getProvider() == null) {
-                try {
-                    if (!this.location.getLevel().loadChunk(this.location.getChunkX(), this.location.getChunkZ())) {
-                        return;
-                    }
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                    FloatingTextMain.getInstance().getLogger().error(e.getCause().getMessage() + "\n"
-                            + e + ":\n"
-                            + Arrays.toString(e.getStackTrace()).replace("[", "\n").replace("]", "\n").replace(", ", "\n")
-                    );
-                    return;
-                }
+                return;
+            }
+            if (this.location.getLevel().getPlayers().isEmpty()) {
+                return;
             }
             TextEntityWithTipsVariable entity = new TextEntityWithTipsVariable(this.location.getChunk(), Entity.getDefaultNBT(this.location), player, this);
             entity.spawnTo(player);
@@ -78,25 +68,17 @@ public class TextEntityData {
     }
 
     public void spawnSimpleFloatingText() {
-        if (!location.isValid()) {
+        if (!location.isValid() || location.getLevel().getPlayers().isEmpty()) {
             return;
         }
         FullChunk chunk = location.getChunk();
         if (chunk == null || !chunk.isLoaded() || chunk.getProvider() == null) {
-            try {
-                if (!location.getLevel().loadChunk(location.getChunkX(), location.getChunkZ())) {
-                    return;
-                }
-            } catch (Throwable e) {
-                e.printStackTrace();
-                FloatingTextMain.getInstance().getLogger().error(e.getCause().getMessage() + "\n"
-                        + e + ":\n"
-                        + Arrays.toString(e.getStackTrace()).replace("[", "\n").replace("]", "\n").replace(", ", "\n")
-                );
-                return;
-            }
+            return;
         }
-        TextEntity entity = new TextEntity(location.getChunk(), Entity.getDefaultNBT(this.location), null, this);
+        if (this.location.getLevel().getPlayers().isEmpty()) {
+            return;
+        }
+        TextEntity entity = new  TextEntity(location.getChunk(), Entity.getDefaultNBT(this.location), null, this);
         entity.spawnToAll();
         entity.scheduleUpdate();
     }

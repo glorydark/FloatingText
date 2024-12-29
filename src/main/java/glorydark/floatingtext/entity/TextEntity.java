@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class TextEntity extends Entity {
-    protected Player owner;
-    protected TextEntityData data;
+    protected final Player owner;
+    protected final TextEntityData data;
 
     public final String WaitingForEditString = "待编辑...";
 

@@ -85,7 +85,13 @@ public class FloatingTextMain extends PluginBase implements Listener {
                                 TextEntityWithTipsVariable textEntity = (TextEntityWithTipsVariable) entity;
                                 textEntity.replaceTipVariable();
                             } else {
-                                entity.setNameTag(((TextEntity) entity).getData().getText());
+                                TextEntity textEntity = ((TextEntity) entity);
+                                if (textEntity.getData() == null) {
+                                    textEntity.kill();
+                                    textEntity.close();
+                                    continue;
+                                }
+                                entity.setNameTag(textEntity.getData().getText());
                             }
                         }
                     }
@@ -153,7 +159,7 @@ public class FloatingTextMain extends PluginBase implements Listener {
             }
             Location location = new Location((Double) map.get("x"), (Double) map.get("y"), (Double) map.get("z"), level);
             if (location.isValid()) {
-                TextEntityData data = new TextEntityData((String) map.getOrDefault("name", ""), location, Tools.castList(map.getOrDefault("lines", new ArrayList<>()), String.class), (Boolean) map.getOrDefault("enable_tips_variable", true));
+                TextEntityData data = new TextEntityData((String) map.getOrDefault("name", ""), location, Tools.castList(map.getOrDefault("lines", new ArrayList<>()), String.class), (Boolean) map.getOrDefault("enable_tips_variable", false));
                 if (!tipsLoaded && data.isEnableTipsVariable()) {
                     if (bool) {
                         this.getLogger().info("§cFailed to load floating text at §e" + location + "§c. Caused by: Tips is not loaded when enabling tips variables!");
