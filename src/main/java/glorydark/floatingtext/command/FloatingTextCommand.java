@@ -4,6 +4,9 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandParamType;
+import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.utils.TextFormat;
 import glorydark.floatingtext.FloatingTextMain;
 import glorydark.floatingtext.entity.TextEntityData;
@@ -15,6 +18,23 @@ import java.util.Arrays;
 public class FloatingTextCommand extends Command {
     public FloatingTextCommand(String command) {
         super(command);
+
+        this.getCommandParameters().clear();
+
+        this.getCommandParameters().put("admin", new CommandParameter[]{
+                CommandParameter.newEnum("admin", false, new String[]{"admin"})
+        });
+
+        this.getCommandParameters().put("reload", new CommandParameter[]{
+                CommandParameter.newEnum("reload", false, new String[]{"reload"})
+        });
+
+        this.getCommandParameters().put("add", new CommandParameter[]{
+                CommandParameter.newEnum("add", false, new String[]{"add"}),
+                CommandParameter.newType("flag", false, CommandParamType.STRING),
+                CommandParameter.newType("text", false, CommandParamType.STRING),
+                CommandParameter.newEnum("tipsVariable", true, new CommandEnum("TipsVariable", "true", "false"))
+        });
     }
 
     public boolean execute(CommandSender commandSender, String s, String[] strings) {
@@ -40,11 +60,7 @@ public class FloatingTextCommand extends Command {
                         TextEntityData data = new TextEntityData(name, player, new ArrayList<>(Arrays.asList(text.split("\\n"))), enableTipsVariable);
                         FloatingTextMain.getInstance().addFloatingText(data);
                         commandSender.sendMessage("§a成功添加浮空字至 " + player.getX() + "," + player.getY() + "," + player.getZ() + "," + player.getLevel().getName());
-                        for (Player value : Server.getInstance().getOnlinePlayers().values()) {
-                            if (enableTipsVariable) {
-                                data.spawnTipsVariableFloatingTextTo(value);
-                            }
-                        }
+                        data.checkEntity();
                         return true;
                     }
                     break;

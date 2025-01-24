@@ -6,7 +6,7 @@
 
     <groupId>glorydark.nukkit</groupId>
     <artifactId>FloatingText</artifactId>
-    <version>1.2.6</version>
+    <version>1.2.5</version>
 
     <properties>
         <maven.complier.sourceEncoding>UTF-8</maven.complier.sourceEncoding>
@@ -45,7 +45,7 @@
     <dependencies>
         <dependency>
             <groupId>cn.nukkit</groupId>
-            <artifactId>nukkit</artifactId>
+            <artifactId>Nukkit</artifactId>
             <version>MOT-java8-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
@@ -64,4 +64,26 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}-${project.version}</finalName>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/plugin.yml</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>**/plugin.yml</exclude>
+                </excludes>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+    </build>
 </project>
