@@ -1,7 +1,7 @@
 name: FloatingText
 main: glorydark.floatingtext.FloatingTextMain
 author: glorydark
-version: "1.2.4"
+version: "${project.version}"
 description: FloatingText
 api: "1.0.0"
 load: POSTWORLD

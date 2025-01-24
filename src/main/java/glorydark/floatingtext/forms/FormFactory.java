@@ -4,13 +4,11 @@ import cn.lanink.gamecore.form.windows.AdvancedFormWindowCustom;
 import cn.lanink.gamecore.form.windows.AdvancedFormWindowModal;
 import cn.lanink.gamecore.form.windows.AdvancedFormWindowSimple;
 import cn.nukkit.Player;
-import cn.nukkit.form.element.ElementButton;
-import cn.nukkit.form.element.ElementInput;
-import cn.nukkit.form.element.ElementLabel;
-import cn.nukkit.form.element.ElementToggle;
+import cn.nukkit.form.element.*;
 import cn.nukkit.utils.Config;
 import glorydark.floatingtext.FloatingTextMain;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,10 +24,10 @@ public class FormFactory {
     public static HashMap<Player, Integer> editPlayerCaches = new HashMap<>();
 
     public static void showAdminMain(Player player) {
-        AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple("浮空字管理面板", "请选择需要的功能");
-        simple.addButton(new ElementButton("创建浮空字"));
-        simple.addButton(new ElementButton("编辑/删除浮空字"));
-        simple.addButton(new ElementButton("重载数据"));
+        AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple("§f浮空字管理面板", "请选择需要的功能");
+        simple.addButton(new ElementButton("创建浮空字", new ElementButtonImageData("path", "textures/ui/color_plus")));
+        simple.addButton(new ElementButton("编辑/删除浮空字", new ElementButtonImageData("path", "textures/ui/icon_setting")));
+        simple.addButton(new ElementButton("重载数据", new ElementButtonImageData("path", "textures/ui/refresh_light")));
         simple.onClicked((elementButton, player1) -> {
             switch (simple.getResponse().getClickedButtonId()) {
                 case 0:
@@ -56,7 +54,7 @@ public class FormFactory {
         custom.addElement(new ElementInput("世界", "", player.getLevel().getName()));
         custom.addElement(new ElementToggle("Tips变量支持", false));
         custom.onResponded((formResponseCustom, customResponsePlayer) -> {
-            Config config = new Config(FloatingTextMain.getPath() + "/config.yml", Config.YAML);
+            Config config = new Config(FloatingTextMain.getPath() + File.separator + "config.yml", Config.YAML);
             List<Map<String, Object>> maps = new ArrayList<>(config.get("texts", new ArrayList<>()));
             Map<String, Object> map = new HashMap<>();
             map.put("name", custom.getResponse().getInputResponse(0));
@@ -76,7 +74,7 @@ public class FormFactory {
 
     // Edit
     public static void showEditList(Player player) {
-        Config config = new Config(FloatingTextMain.getPath() + "/config.yml", Config.YAML);
+        Config config = new Config(FloatingTextMain.getPath() + File.separator + "config.yml", Config.YAML);
         List<Map<String, Object>> keys = new ArrayList<>(config.get("texts", new ArrayList<>()));
         AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple("编辑浮空字 - 编辑列表", "请选择你要编辑的浮空字");
         if (keys.size() == 0) {
@@ -138,7 +136,7 @@ public class FormFactory {
         AdvancedFormWindowCustom custom = new AdvancedFormWindowCustom("编辑浮空字 - 添加行文本");
         custom.addElement(new ElementInput("内容"));
         custom.onResponded((formResponseCustom, responsePlayer) -> {
-            Config config = new Config(FloatingTextMain.getPath() + "/config.yml", Config.YAML);
+            Config config = new Config(FloatingTextMain.getPath() + File.separator + "config.yml", Config.YAML);
             List<Map<String, Object>> maps = new ArrayList<>(config.get("texts", new ArrayList<>()));
             Map<String, Object> map = maps.get(id);
             if (map != null) {
@@ -161,7 +159,7 @@ public class FormFactory {
 
     public static void showEditTextSelect(Player player, int id) {
         AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple("编辑浮空字 - 选择编辑文本", "请选择你要编辑的文本");
-        Config config = new Config(FloatingTextMain.getPath() + "/config.yml", Config.YAML);
+        Config config = new Config(FloatingTextMain.getPath() + File.separator + "config.yml", Config.YAML);
         List<Map<String, Object>> maps = new ArrayList<>(config.get("texts", new ArrayList<>()));
         if (id >= maps.size()) {
             showReturnMenu(player, "§c该文本已被删除!", responsePlayer -> showEditTextSelect(responsePlayer, id));
@@ -190,7 +188,7 @@ public class FormFactory {
 
     public static void showEditText(Player player, int id, int textId) {
         AdvancedFormWindowCustom custom = new AdvancedFormWindowCustom("编辑浮空字 - 文本编辑");
-        Config config = new Config(FloatingTextMain.getPath() + "/config.yml", Config.YAML);
+        Config config = new Config(FloatingTextMain.getPath() + File.separator + "config.yml", Config.YAML);
         List<Map<String, Object>> maps = new ArrayList<>(config.get("texts", new ArrayList<>()));
         Map<String, Object> map = maps.get(id);
         List<String> strings = (List<String>) map.getOrDefault("lines", new ArrayList<>());
@@ -219,7 +217,7 @@ public class FormFactory {
     }
 
     public static void showEditBasicData(Player player, int id) {
-        Config config = new Config(FloatingTextMain.getPath() + "/config.yml", Config.YAML);
+        Config config = new Config(FloatingTextMain.getPath() + File.separator + "config.yml", Config.YAML);
         List<Map<String, Object>> maps = new ArrayList<>(config.get("texts", new ArrayList<>()));
         Map<String, Object> map = maps.get(id);
         if (map != null) {

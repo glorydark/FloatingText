@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import glorydark.floatingtext.FloatingTextMain;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -11,8 +12,6 @@ import java.util.Map;
 public class TextEntity extends Entity {
     protected Player owner;
     protected TextEntityData data;
-
-    public final String WaitingForEditString = "待编辑...";
 
     public TextEntity(FullChunk chunk, CompoundTag nbt, Player owner, TextEntityData data) {
         super(chunk, nbt);
@@ -24,12 +23,17 @@ public class TextEntity extends Entity {
         return 64;
     }
 
+    @Override
     protected void initEntity() {
         super.initEntity();
         this.setNameTagVisible(true);
         this.setNameTagAlwaysVisible(true);
         this.setImmobile(true);
         this.getDataProperties().putLong(0, 65536L);
+
+        if (FloatingTextMain.serverPlat.equals("mot")) {
+            this.setCanBeSavedWithChunk(false);
+        }
     }
 
     public Player getOwner() {
@@ -41,14 +45,15 @@ public class TextEntity extends Entity {
     }
 
     @Override
+    public void spawnTo(Player player) {
+        super.spawnTo(player);
+        this.setNameTag(getData().getText());
+    }
+
+    @Override
     public boolean onUpdate(int currentTick) {
-        for (Map.Entry<Integer, Player> entry : new ArrayList<>(this.hasSpawned.entrySet())) {
-            Player player = entry.getValue();
-            if (!player.isOnline() || player.getLevel() != this.getLevel()) {
-                this.despawnFrom(player);
-                this.hasSpawned.remove(entry.getKey());
-            }
-        }
+        if (this.closed) return false;
+
         return super.onUpdate(currentTick);
     }
 }
