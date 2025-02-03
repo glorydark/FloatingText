@@ -77,7 +77,7 @@ public class FormFactory {
         Config config = new Config(FloatingTextMain.getPath() + File.separator + "config.yml", Config.YAML);
         List<Map<String, Object>> keys = new ArrayList<>(config.get("texts", new ArrayList<>()));
         AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple("编辑浮空字 - 编辑列表", "请选择你要编辑的浮空字");
-        if (keys.size() == 0) {
+        if (keys.isEmpty()) {
             simple.setContent("暂无浮空字，请先创建！");
             simple.onClosed(FormFactory::showAdminMain);
             simple.showToPlayer(player);
@@ -90,17 +90,17 @@ public class FormFactory {
                 simple.addButton(new ElementButton(map.get("x") + ":" + map.get("y") + ":" + map.get("z")));
             }
         }
-        simple.onClicked((elementButton, simpleResponsePlayer) -> {
+        simple.onClicked((elementButton, player1) -> {
             int editId = simple.getResponse().getClickedButtonId();
             if (!editPlayerCaches.containsValue(editId)) {
-                if (!editPlayerCaches.containsKey(player)) {
-                    showEditChoice(simpleResponsePlayer, simple.getResponse().getClickedButtonId());
-                    editPlayerCaches.put(simpleResponsePlayer, editId);
+                if (!editPlayerCaches.containsKey(player1)) {
+                    showEditChoice(player1, simple.getResponse().getClickedButtonId());
+                    editPlayerCaches.put(player1, editId);
                 } else {
-                    showReturnMenu(simpleResponsePlayer, "§c错误：您仍在编辑状态，请尝试重进游戏！", FormFactory::showEditList);
+                    showReturnMenu(player1, "§c错误：您仍在编辑状态，请尝试重进游戏！", FormFactory::showEditList);
                 }
             } else {
-                showReturnMenu(simpleResponsePlayer, "§c已经有管理员在编辑该项了！", FormFactory::showEditList);
+                showReturnMenu(player1, "§c已经有管理员在编辑该项了！", FormFactory::showEditList);
             }
         });
         simple.onClosed(FormFactory::showAdminMain);
@@ -168,7 +168,7 @@ public class FormFactory {
         Map<String, Object> map = maps.get(id);
         if (map != null) {
             List<String> strings = (List<String>) map.getOrDefault("lines", new ArrayList<>());
-            if (strings.size() == 0) {
+            if (strings.isEmpty()) {
                 simple.setContent("暂无文本，请先添加文本！");
                 simple.onClosed(player1 -> showEditChoice(player, id));
                 simple.showToPlayer(player);
@@ -228,11 +228,11 @@ public class FormFactory {
             ));
             custom.addElement(new ElementToggle("是否删除", false));
             custom.addElement(new ElementInput("名称", "", (String) map.getOrDefault("name", "")));
-            custom.addElement(new ElementInput("x", "", String.valueOf(map.get("x"))));
-            custom.addElement(new ElementInput("y", "", String.valueOf(map.get("y"))));
-            custom.addElement(new ElementInput("z", "", String.valueOf(map.get("z"))));
-            custom.addElement(new ElementInput("世界", "", (String) map.get("level")));
-            custom.addElement(new ElementToggle("Tips变量支持", (Boolean) map.get("enable_tips_variable")));
+            custom.addElement(new ElementInput("x", "", String.valueOf(map.getOrDefault("x", 0d))));
+            custom.addElement(new ElementInput("y", "", String.valueOf(map.getOrDefault("y", 0d))));
+            custom.addElement(new ElementInput("z", "", String.valueOf(map.getOrDefault("z", 0d))));
+            custom.addElement(new ElementInput("世界", "", (String) map.getOrDefault("level", "world")));
+            custom.addElement(new ElementToggle("Tips变量支持", (Boolean) map.getOrDefault("enable_tips_variable", false)));
             custom.onResponded((formResponseCustom, i) -> {
                 if (custom.getResponse().getToggleResponse(1)) {
                     maps.remove(id);
