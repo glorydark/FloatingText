@@ -6,9 +6,6 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import glorydark.floatingtext.FloatingTextMain;
 
-import java.util.ArrayList;
-import java.util.Map;
-
 public class TextEntity extends Entity {
     protected Player owner;
     protected TextEntityData data;
@@ -53,7 +50,11 @@ public class TextEntity extends Entity {
     @Override
     public boolean onUpdate(int currentTick) {
         if (this.closed) return false;
-
+        // After 5 minutes, Minecraft client-side entities may become invisible.
+        // To ensure the player remains visible, we force respawn.
+        if (currentTick % (20 * 300) == 0) {
+            this.respawnToAll();
+        }
         return super.onUpdate(currentTick);
     }
 }
