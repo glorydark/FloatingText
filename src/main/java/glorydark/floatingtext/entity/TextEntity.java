@@ -2,6 +2,8 @@ package glorydark.floatingtext.entity;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.item.EntityArmorStand;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import glorydark.floatingtext.FloatingTextMain;
@@ -17,7 +19,7 @@ public class TextEntity extends Entity {
     }
 
     public int getNetworkId() {
-        return 64;
+        return EntityArmorStand.NETWORK_ID;
     }
 
     @Override
@@ -27,6 +29,7 @@ public class TextEntity extends Entity {
         this.setNameTagAlwaysVisible(true);
         this.setImmobile(true);
         this.getDataProperties().putLong(0, 65536L);
+        this.setScale(0.0f);
 
         if (FloatingTextMain.serverPlat.equals("mot")) {
             this.setCanBeSavedWithChunk(false);
@@ -48,13 +51,13 @@ public class TextEntity extends Entity {
     }
 
     @Override
+    public boolean attack(EntityDamageEvent source) {
+        return false;
+    }
+
+    @Override
     public boolean onUpdate(int currentTick) {
         if (this.closed) return false;
-        // After 5 minutes, Minecraft client-side entities may become invisible.
-        // To ensure the player remains visible, we force respawn.
-        if (currentTick % (20 * 300) == 0) {
-            this.respawnToAll();
-        }
         return super.onUpdate(currentTick);
     }
 }
