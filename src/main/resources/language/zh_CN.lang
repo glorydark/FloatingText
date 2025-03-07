@@ -1,0 +1,8 @@
+command.add.success=成功添加浮空字至 {%0},{%1},{%2} {%3}
+softdepend.notfound=找不到依赖插件：{%0}
+softdepend.notfound.tips=依赖插件 Tips 未安装！浮空字 {%0} 无法使用 tips 变量！
+world.notfound=无法加载世界 {%0}，浮空字 {%1} 无法生成！
+
+floatingtext.load.success=成功加载位于 {%0} 的浮空字。
+floatingtext.load.failed.tips=无法加载位于 {%0} 的浮空字。因为启用了 Tips 变量，但 Tips 插件未加载！
+floatingtext.load.failed.invalid=无法加载无效位置 {%0} 的浮空字。

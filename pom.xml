@@ -6,7 +6,7 @@
 
     <groupId>glorydark.nukkit</groupId>
     <artifactId>FloatingText</artifactId>
-    <version>1.2.6</version>
+    <version>1.2.7</version>
 
     <properties>
         <maven.complier.sourceEncoding>UTF-8</maven.complier.sourceEncoding>

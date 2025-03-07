@@ -9,6 +9,8 @@ import glorydark.floatingtext.FloatingTextMain;
 import java.util.List;
 import java.util.Map;
 
+import static glorydark.floatingtext.FloatingTextMain.*;
+
 public class TextEntityData {
 
     protected String name;
@@ -45,12 +47,11 @@ public class TextEntityData {
 
     @Deprecated
     public void spawnTipsVariableFloatingTextTo(Player player) {
-        if (enableTipsVariable) {
-            TextEntityWithTipsVariable entity = new TextEntityWithTipsVariable(this.location.getChunk(), Entity.getDefaultNBT(this.location), player, this);
-            entity.spawnTo(player);
-            entity.scheduleUpdate();
-            this.textEntity = entity;
-        }
+        if (!enableTipsVariable) return;
+        TextEntityWithTipsVariable entity = new TextEntityWithTipsVariable(this.location.getChunk(), Entity.getDefaultNBT(this.location), player, this);
+        entity.spawnTo(player);
+        entity.scheduleUpdate();
+        this.textEntity = entity;
     }
 
     @Deprecated
@@ -58,6 +59,9 @@ public class TextEntityData {
         TextEntity entity = new TextEntity(this.location.getChunk(), Entity.getDefaultNBT(this.location), null, this);
         entity.spawnToAll();
         entity.scheduleUpdate();
+        if (FloatingTextMain.serverPlat.equals("mot")) {
+            entity.setCanBeSavedWithChunk(false);
+        }
         this.textEntity = entity;
     }
 
@@ -79,7 +83,7 @@ public class TextEntityData {
 
     public void checkEntity() {
         if ((this.location.getLevel() == null && !Server.getInstance().loadLevel(this.location.getLevelName())) || this.location.getLevel().getProvider() == null) {
-            FloatingTextMain.getInstance().getLogger().error("世界: " + this.location.getLevelName() + " 无法加载！浮空字 " + this.getName() + "无法生成！");
+            FloatingTextMain.getInstance().getLogger().error(getI18n().tr(serverLangCode, "world.notfound", this.location.getLevelName(), this.getName()));
             return;
         }
 
@@ -97,6 +101,11 @@ public class TextEntityData {
         }
 
         if (enableTipsVariable) {
+            if (!hasTips) {
+                FloatingTextMain.getInstance().getLogger().warning(getI18n().tr(serverLangCode, "softdepend.notfound.tips", this.getName()));
+                spawnSimpleFloatingText();
+                return;
+            }
             TextEntityWithTipsVariable entity = new TextEntityWithTipsVariable(this.location.getChunk(), Entity.getDefaultNBT(this.location), null, this);
             entity.scheduleUpdate();
             if (FloatingTextMain.serverPlat.equals("mot")) {
