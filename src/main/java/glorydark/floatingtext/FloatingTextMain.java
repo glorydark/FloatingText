@@ -8,6 +8,9 @@ import cn.nukkit.event.Listener;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.PlayerLocallyInitializedEvent;
 import cn.nukkit.event.player.PlayerQuitEvent;
+import cn.nukkit.lang.LangCode;
+import cn.nukkit.lang.PluginI18n;
+import cn.nukkit.lang.PluginI18nManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.plugin.PluginBase;
@@ -29,9 +32,16 @@ import java.util.Map;
 public class FloatingTextMain extends PluginBase implements Listener {
     private static String path;
     private static FloatingTextMain instance;
+
+    public static PluginI18n i18n;
+
+    public static LangCode serverLangCode;
+
     public List<TextEntityData> textEntitiesDataList = new ArrayList<>();
     public String command;
     public boolean tipsLoaded;
+
+    public static boolean hasTips = false;
     public static String serverPlat = "nukkit";
 
     public static FloatingTextMain getInstance() {
@@ -47,15 +57,14 @@ public class FloatingTextMain extends PluginBase implements Listener {
         if (Server.getInstance().getCodename().equalsIgnoreCase("mot")) {
             serverPlat = "mot";
         }
+        i18n = PluginI18nManager.register(this);
+        initServerLangCode();
     }
 
     public void onEnable() {
         instance = this;
         path = getDataFolder().getPath();
-        tipsLoaded = (this.getServer().getPluginManager().getPlugin("Tips") != null);
-        if (!tipsLoaded) {
-            this.getLogger().alert("Tips is not loaded. Floating texts with tips variable features will not be loaded!");
-        }
+        hasTips = Server.getInstance().getPluginManager().getPlugin("Tips") != null;
         this.saveDefaultConfig();
         this.loadAll();
         this.getServer().getPluginManager().registerEvents(this, this);
@@ -113,20 +122,20 @@ public class FloatingTextMain extends PluginBase implements Listener {
         for (Map<String, Object> map : list) {
             Location location = new Location((Double) map.get("x"), (Double) map.get("y"), (Double) map.get("z"), Server.getInstance().getLevelByName((String) map.get("level")));
             if (location.isValid()) {
-                TextEntityData data = new TextEntityData((String) map.getOrDefault("name", ""), location, Tools.castList(map.getOrDefault("lines", new ArrayList<>()), String.class), (Boolean) map.getOrDefault("enable_tips_variable", true));
-                if (!tipsLoaded && data.isEnableTipsVariable()) {
-                    if (bool) {
-                        this.getLogger().info("§cFailed to load floating text at §e" + location + "§c. Caused by: Tips is not loaded when enabling tips variables!");
-                    }
-                } else {
-                    this.textEntitiesDataList.add(data);
-                    if (bool) {
-                        this.getLogger().info("§aLoad floating text at §e" + location);
-                    }
+                if (bool) {
+                    this.getLogger().info(getI18n().tr(serverLangCode, "floatingtext.load.failed.invalid", location));
+                }
+                continue;
+            }
+            TextEntityData data = new TextEntityData((String) map.getOrDefault("name", ""), location, Tools.castList(map.getOrDefault("lines", new ArrayList<>()), String.class), (Boolean) map.getOrDefault("enable_tips_variable", false));
+            if (!hasTips && data.isEnableTipsVariable()) {
+                if (bool) {
+                    this.getLogger().info(getI18n().tr(serverLangCode, "floatingtext.load.failed.tips", location));
                 }
             } else {
+                this.textEntitiesDataList.add(data);
                 if (bool) {
-                    this.getLogger().info("§cFailed to load floating text at §e" + location);
+                    this.getLogger().info(getI18n().tr(serverLangCode, "floatingtext.load.success", location));
                 }
             }
         }
@@ -162,5 +171,37 @@ public class FloatingTextMain extends PluginBase implements Listener {
             }
         }
         FormFactory.editPlayerCaches.remove(player);
+    }
+
+    public static PluginI18n getI18n() {
+        return i18n;
+    }
+
+    public void initServerLangCode() {
+        switch (Server.getInstance().getLanguage().getLang()) {
+            case "eng": {
+                serverLangCode = LangCode.en_US;
+                break;
+            }
+            case "chs": {
+                serverLangCode = LangCode.zh_CN;
+                break;
+            }
+            case "deu": {
+                serverLangCode = LangCode.de_DE;
+                break;
+            }
+            case "rus": {
+                serverLangCode = LangCode.ru_RU;
+                break;
+            }
+            default: {
+                try {
+                    serverLangCode = LangCode.valueOf(Server.getInstance().getLanguage().getLang());
+                } catch (IllegalArgumentException e) {
+                    serverLangCode = LangCode.en_US;
+                }
+            }
+        }
     }
 }

@@ -1,0 +1,8 @@
+command.add.success=FloatingText has been successfully added to {%0},{%1},{%2} {%3}.
+softdepend.notfound=Dependency plugin not found: {%0}.
+softdepend.notfound.tips=Dependency plugin Tips is not installed! FloatingText {%0} cannot use tips variables!
+world.notfound=Unable to load world {%0}, FloatingText {%1} cannot be generated!
+
+floatingtext.load.success=FloatingText at {%0} has been successfully loaded.
+floatingtext.load.failed.tips=Unable to load FloatingText at {%0}. Tips variables are enabled, but the Tips plugin is not loaded!
+floatingtext.load.failed.invalid=Unable to load FloatingText at invalid location {%0}.
