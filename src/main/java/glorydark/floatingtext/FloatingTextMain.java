@@ -121,7 +121,7 @@ public class FloatingTextMain extends PluginBase implements Listener {
         List<Map<String, Object>> list = config.get("texts", new ArrayList<>());
         for (Map<String, Object> map : list) {
             Location location = new Location((Double) map.get("x"), (Double) map.get("y"), (Double) map.get("z"), Server.getInstance().getLevelByName((String) map.get("level")));
-            if (location.isValid()) {
+            if (!location.isValid()) {
                 if (bool) {
                     this.getLogger().info(getI18n().tr(serverLangCode, "floatingtext.load.failed.invalid", location));
                 }
