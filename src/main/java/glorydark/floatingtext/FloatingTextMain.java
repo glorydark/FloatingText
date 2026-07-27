@@ -56,10 +56,12 @@ public class FloatingTextMain extends PluginBase implements Listener {
             serverPlat = "mot";
         }
         this.saveDefaultConfig();
-        Config config = new Config(path + File.separator + "config.yml", Config.YAML);
-        language = new Language(config.getString("default_lang", "en_US"));
         this.saveResource("language/zh_CN.properties");
         this.saveResource("language/en_US.properties");
+        Config config = new Config(path + File.separator + "config.yml", Config.YAML);
+        language = new Language(config.getString("default_lang", "en_US"));
+        language.addLanguage(new File(path + File.separator + "language" + File.separator + "zh_CN.properties"));
+        language.addLanguage(new File(path + File.separator + "language" + File.separator + "en_US.properties"));
     }
 
     public void onEnable() {
