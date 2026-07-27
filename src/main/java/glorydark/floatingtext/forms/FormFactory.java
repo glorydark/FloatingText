@@ -10,6 +10,7 @@ import glorydark.floatingtext.FloatingTextMain;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,17 @@ public class FormFactory {
         custom.addElement(new ElementInput("z", "", String.valueOf(player.getZ())));
         custom.addElement(new ElementInput("世界", "", player.getLevel().getName()));
         custom.addElement(new ElementToggle("Tips变量支持", false));
+        custom.addElement(new ElementDropdown("类型", Arrays.asList("armor_stand", "debug_text"), 0));
+        custom.addElement(new ElementInput("缩放 (仅debug_text)", "", "1.0"));
+        custom.addElement(new ElementToggle("固定朝向 (仅debug_text)", false));
+        custom.addElement(new ElementInput("刷新间隔(秒, 0=默认, 保留)", "", "0"));
+        custom.addElement(new ElementInput("背景色 (仅debug_text, 空=透明, #RRGGBB/#AARRGGBB)", "", ""));
+        custom.addElement(new ElementInput("文本色 (仅debug_text, 空=默认, #RRGGBB/#AARRGGBB)", "", ""));
+        custom.addElement(new ElementToggle("穿墙可见 (仅debug_text)", false));
+        custom.addElement(new ElementInput("水平朝向 (仅debug_text, use_rotation=true时生效)", "", "0"));
+        custom.addElement(new ElementInput("垂直朝向 (仅debug_text, use_rotation=true时生效)", "", "0"));
+        custom.addElement(new ElementToggle("显示背面 (仅debug_text)", true));
+        custom.addElement(new ElementToggle("显示文字背面 (仅debug_text)", true));
         custom.onResponded((formResponseCustom, customResponsePlayer) -> {
             Config config = new Config(FloatingTextMain.getPath() + File.separator + "config.yml", Config.YAML);
             List<Map<String, Object>> maps = new ArrayList<>(config.get("texts", new ArrayList<>()));
@@ -63,6 +75,20 @@ public class FormFactory {
             map.put("z", Double.parseDouble(custom.getResponse().getInputResponse(3)));
             map.put("level", custom.getResponse().getInputResponse(4));
             map.put("enable_tips_variable", custom.getResponse().getToggleResponse(5));
+            map.put("type", custom.getResponse().getDropdownResponse(6));
+            String type = (String) map.get("type");
+            if ("debug_text".equals(type)) {
+                map.put("scale", Double.parseDouble(custom.getResponse().getInputResponse(7)));
+                map.put("use_rotation", custom.getResponse().getToggleResponse(8));
+                map.put("duration", Double.parseDouble(custom.getResponse().getInputResponse(9)));
+                map.put("background_color", custom.getResponse().getInputResponse(10));
+                map.put("color", custom.getResponse().getInputResponse(11));
+                map.put("depth_test", custom.getResponse().getToggleResponse(12));
+                map.put("rotation_yaw", Double.parseDouble(custom.getResponse().getInputResponse(13)));
+                map.put("rotation_pitch", Double.parseDouble(custom.getResponse().getInputResponse(14)));
+                map.put("show_backface", custom.getResponse().getToggleResponse(15));
+                map.put("show_text_backface", custom.getResponse().getToggleResponse(16));
+            }
             maps.add(map);
             config.set("texts", maps);
             config.save();
@@ -233,6 +259,19 @@ public class FormFactory {
             custom.addElement(new ElementInput("z", "", String.valueOf(map.getOrDefault("z", 0d))));
             custom.addElement(new ElementInput("世界", "", (String) map.getOrDefault("level", "world")));
             custom.addElement(new ElementToggle("Tips变量支持", (Boolean) map.getOrDefault("enable_tips_variable", false)));
+            String currentType = (String) map.getOrDefault("type", "armor_stand");
+            int typeIndex = "debug_text".equals(currentType) ? 1 : 0;
+            custom.addElement(new ElementDropdown("类型", Arrays.asList("armor_stand", "debug_text"), typeIndex));
+            custom.addElement(new ElementInput("缩放", "", String.valueOf(map.getOrDefault("scale", 1.0d))));
+            custom.addElement(new ElementToggle("固定朝向", (Boolean) map.getOrDefault("use_rotation", false)));
+            custom.addElement(new ElementInput("刷新间隔(秒, 0=默认)", "", String.valueOf(map.getOrDefault("duration", 0.0d))));
+            custom.addElement(new ElementInput("背景色(空=透明, #RRGGBB/#AARRGGBB)", "", (String) map.getOrDefault("background_color", "")));
+            custom.addElement(new ElementInput("文本色(空=默认, #RRGGBB/#AARRGGBB)", "", (String) map.getOrDefault("color", "")));
+            custom.addElement(new ElementToggle("穿墙可见", (Boolean) map.getOrDefault("depth_test", true)));
+            custom.addElement(new ElementInput("水平朝向(yaw)", "", String.valueOf(map.getOrDefault("rotation_yaw", 0.0d))));
+            custom.addElement(new ElementInput("垂直朝向(pitch)", "", String.valueOf(map.getOrDefault("rotation_pitch", 0.0d))));
+            custom.addElement(new ElementToggle("显示背面", (Boolean) map.getOrDefault("show_backface", true)));
+            custom.addElement(new ElementToggle("显示文字背面", (Boolean) map.getOrDefault("show_text_backface", true)));
             custom.onResponded((formResponseCustom, i) -> {
                 if (custom.getResponse().getToggleResponse(1)) {
                     maps.remove(id);
@@ -254,6 +293,17 @@ public class FormFactory {
                         map.put("z", Double.parseDouble(custom.getResponse().getInputResponse(5)));
                         map.put("level", custom.getResponse().getInputResponse(6));
                         map.put("enable_tips_variable", custom.getResponse().getToggleResponse(7));
+                        map.put("type", custom.getResponse().getDropdownResponse(8));
+                        map.put("scale", Double.parseDouble(custom.getResponse().getInputResponse(9)));
+                        map.put("use_rotation", custom.getResponse().getToggleResponse(10));
+                        map.put("duration", Double.parseDouble(custom.getResponse().getInputResponse(11)));
+                        map.put("background_color", custom.getResponse().getInputResponse(12));
+                        map.put("color", custom.getResponse().getInputResponse(13));
+                        map.put("depth_test", custom.getResponse().getToggleResponse(14));
+                        map.put("rotation_yaw", Double.parseDouble(custom.getResponse().getInputResponse(15)));
+                        map.put("rotation_pitch", Double.parseDouble(custom.getResponse().getInputResponse(16)));
+                        map.put("show_backface", custom.getResponse().getToggleResponse(17));
+                        map.put("show_text_backface", custom.getResponse().getToggleResponse(18));
                         maps.set(id, map);
                         showReturnMenu(player, "§a保存成功！", modalResponsePlayer -> showEditChoice(player, id));
                     } else {

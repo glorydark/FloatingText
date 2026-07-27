@@ -38,7 +38,9 @@ public class FloatingTextCommand extends Command {
                 CommandParameter.newEnum("add", false, new String[]{"add"}),
                 CommandParameter.newType("flag", false, CommandParamType.STRING),
                 CommandParameter.newType("text", false, CommandParamType.STRING),
-                CommandParameter.newEnum("tipsVariable", true, new CommandEnum("TipsVariable", "true", "false"))
+                CommandParameter.newEnum("tipsVariable", true, new CommandEnum("TipsVariable", "true", "false")),
+                CommandParameter.newEnum("type", true, new CommandEnum("FloatingTextType", "armor_stand", "debug_text")),
+                CommandParameter.newEnum("backgroundColor", true, new CommandEnum("BackgroundColor", "transparent"))
         });
     }
 
@@ -47,25 +49,44 @@ public class FloatingTextCommand extends Command {
             if (strings.length == 0) {
                 return false;
             }
-            LangCode langCode = commandSender instanceof Player ? ((Player) commandSender).getLanguageCode() : serverLangCode;
             String subCmdName = strings[0];
             switch (subCmdName) {
                 case "reload":
                     FloatingTextMain.getInstance().loadAll();
                     commandSender.sendMessage("§aReload successfully!");
                     break;
-                case "add": // ctc add name text enabletips
-                    if (commandSender.isPlayer() && strings.length >= 3 && commandSender.isPlayer()) {
+                case "add": // ctc add name text [tipsVariable] [type] [backgroundColor] [color]
+                    if (commandSender.isPlayer() && strings.length >= 3) {
                         String name = strings[1];
                         String text = strings[2];
                         boolean enableTipsVariable = false;
-                        if (strings.length == 4) {
+                        String type = "armor_stand";
+                        String backgroundColor = "";
+                        String color = "";
+                        if (strings.length >= 4) {
                             enableTipsVariable = Boolean.parseBoolean(strings[3]);
                         }
+                        if (strings.length >= 5) {
+                            type = strings[4];
+                        }
+                        if (strings.length >= 6) {
+                            backgroundColor = strings[5];
+                        }
+                        if (strings.length >= 7) {
+                            color = strings[6];
+                        }
+                        if (!"armor_stand".equals(type) && !"debug_text".equals(type)) {
+                            commandSender.sendMessage(TextFormat.RED + "Invalid type! Valid types: armor_stand, debug_text");
+                            return true;
+                        }
+                        if ("debug_text".equals(type) && !"mot".equals(FloatingTextMain.serverPlat)) {
+                            commandSender.sendMessage(TextFormat.RED + "Debug text type requires MOT server platform!");
+                            return true;
+                        }
                         Player player = (Player) commandSender;
-                        TextEntityData data = new TextEntityData(name, player, new ArrayList<>(Arrays.asList(text.split("\\n"))), enableTipsVariable);
+                        TextEntityData data = new TextEntityData(name, player, new ArrayList<>(Arrays.asList(text.split("\\n"))), enableTipsVariable, type, 1.0f, false, 0f, backgroundColor, color, true);
                         FloatingTextMain.getInstance().addFloatingText(data);
-                        commandSender.sendMessage(TextFormat.GREEN + getI18n().tr(langCode, "add_floating_text_successfully", player.getX(), player.getY(), player.getZ(), player.getLevel().getName()));
+                        commandSender.sendMessage(TextFormat.GREEN + getI18n().tr(commandSender, "add_floating_text_successfully", player.getX(), player.getY(), player.getZ(), player.getLevel().getName()));
                         data.checkEntity();
                         return true;
                     }
@@ -74,7 +95,7 @@ public class FloatingTextCommand extends Command {
                     if (commandSender.isPlayer() && commandSender.isOp() && Server.getInstance().getPluginManager().getPlugin("MemoriesOfTime-GameCore") != null) {
                         FormFactory.showAdminMain((Player) commandSender);
                     } else {
-                        commandSender.sendMessage(TextFormat.RED + getI18n().tr(langCode, "softdepend.notfound", "MemoriesOfTime-GameCore"));
+                        commandSender.sendMessage(TextFormat.RED + getI18n().tr(commandSender, "softdepend.notfound", "MemoriesOfTime-GameCore"));
                     }
                     break;
             }

@@ -1,3 +1,4 @@
+default_lang: en_US
 command: ctc
 tips_variable_refresh_millis: 500 # ms
 texts:
@@ -10,3 +11,15 @@ texts:
       - "{y}"
       - "{z}"
     enable_tips_variable: true
+    type: armor_stand # armor_stand (default) or debug_text (requires MOT & protocol >= 1.26.20)
+    # debug_text specific options (only used when type: debug_text):
+    # scale: 1.0
+    # use_rotation: false
+    # duration: 0.0 # reserved (server-managed via CheckEntityFloatingTextTask)
+    # background_color: '' # hex color, empty = transparent, e.g. '#FF0000' or '#80FF0000'
+    # color: '' # text color, empty = default, e.g. '#FF0000'
+    # depth_test: true # false = 穿墙可见
+    # show_backface: true
+    # show_text_backface: true
+    # rotation_yaw: 0.0 # use_rotation=true时生效
+    # rotation_pitch: 0.0
