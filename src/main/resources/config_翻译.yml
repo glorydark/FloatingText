@@ -1,0 +1,24 @@
+default_lang: en_US
+command: ctc
+tips_variable_refresh_millis: 500 # ms
+texts:
+  - x: 1.0
+    y: 79.0
+    z: -6.0
+    level: world
+    lines:
+      - "{x}"
+      - "{y}"
+      - "{z}"
+    enable_tips_variable: true
+    type: armor_stand # armor_stand (默认) or debug_text (版本大于1.26.20)
+    # debug_text specific options (以下选项为 debug_text 专享):
+    scale: 1.0
+    use_rotation: false # 是否使用固定朝向
+    background_color: '' # 颜色，hex color, empty = transparent, e.g. '#FF0000' or '#80FF0000'
+    color: '' # 文本颜色，支持§颜色字符，也可设置颜色, empty = default, e.g. '#FF0000'
+    depth_test: true # true = 不穿墙可见，false = 穿墙可见
+    show_backface: true # 背对浮空字时是否对玩家显示
+    show_text_backface: true # 背对浮空字时是否对玩家显示浮空字文本
+    rotation_yaw: 0.0 # use_rotation=true时生效，水平朝向
+    rotation_pitch: 0.0 # use_rotation=true时生效，垂直朝向

@@ -51,6 +51,8 @@ public class FloatingTextMain extends PluginBase implements Listener {
     }
 
     public void onLoad() {
+        instance = this;
+        path = getDataFolder().getPath();
         getLogger().info("FloatingText onLoad");
         if (Server.getInstance().getCodename().equalsIgnoreCase("mot")) {
             serverPlat = "mot";
@@ -65,8 +67,6 @@ public class FloatingTextMain extends PluginBase implements Listener {
     }
 
     public void onEnable() {
-        instance = this;
-        path = getDataFolder().getPath();
         hasTips = Server.getInstance().getPluginManager().getPlugin("Tips") != null;
         this.loadAll();
         this.getServer().getPluginManager().registerEvents(this, this);
@@ -145,7 +145,7 @@ public class FloatingTextMain extends PluginBase implements Listener {
             Location location = new Location((Double) map.get("x"), (Double) map.get("y"), (Double) map.get("z"), Server.getInstance().getLevelByName((String) map.get("level")));
             if (!location.isValid()) {
                 if (bool) {
-                    this.getLogger().info(getI18n().tr("floatingtext.load.failed.invalid", location));
+                    this.getLogger().info(language.tr("floatingtext.load.failed.invalid", location));
                 }
                 continue;
             }
@@ -175,7 +175,7 @@ public class FloatingTextMain extends PluginBase implements Listener {
             } else {
                 this.textEntitiesDataList.add(data);
                 if (bool) {
-                    this.getLogger().info(getI18n().tr("floatingtext.load.success", location));
+                    this.getLogger().info(language.tr("floatingtext.load.success", location));
                 }
             }
         }
