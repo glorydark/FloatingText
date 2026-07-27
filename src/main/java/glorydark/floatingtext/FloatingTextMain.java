@@ -19,6 +19,7 @@ import glorydark.floatingtext.entity.TextEntityData;
 import glorydark.floatingtext.entity.TextEntityWithTipsVariable;
 import glorydark.floatingtext.forms.FormFactory;
 import glorydark.floatingtext.tasks.CheckEntityFloatingTextTask;
+import glorydark.floatingtext.tasks.DebugTextCleanupTask;
 import glorydark.floatingtext.utils.Language;
 import glorydark.floatingtext.utils.Tools;
 
@@ -72,6 +73,9 @@ public class FloatingTextMain extends PluginBase implements Listener {
         this.getServer().getPluginManager().registerEvents(this, this);
         this.getServer().getCommandMap().register("", new FloatingTextCommand(this.command));
         this.getServer().getScheduler().scheduleRepeatingTask(this, new CheckEntityFloatingTextTask(this), 60);
+        if ("mot".equals(serverPlat)) {
+            this.getServer().getScheduler().scheduleRepeatingTask(this, new DebugTextCleanupTask(this), 5);
+        }
         this.getLogger().info("FloatingText onEnable");
     }
 

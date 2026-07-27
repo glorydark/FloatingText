@@ -156,6 +156,15 @@ public class TextEntityData {
         }
     }
 
+    public void removeDebugTextFrom(Player player) {
+        if (debugShapeId == -1) return;
+        if (!"mot".equals(FloatingTextMain.serverPlat)) return;
+
+        DebugDrawerPacket packet = new DebugDrawerPacket();
+        packet.shapes.add(new DebugShape(debugShapeId, 0));
+        player.dataPacket(packet);
+    }
+
     public void spawnDebugTextTo(Player player) {
         if (!"debug_text".equalsIgnoreCase(type)) return;
         if (debugShapeId == -1) return;
