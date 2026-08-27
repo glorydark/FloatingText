@@ -66,33 +66,39 @@ public class FormFactory {
         custom.addElement(new ElementToggle("显示背面 (仅debug_text)", true));
         custom.addElement(new ElementToggle("显示文字背面 (仅debug_text)", true));
         custom.onResponded((formResponseCustom, customResponsePlayer) -> {
-            Config config = new Config(FloatingTextMain.getPath() + File.separator + "config.yml", Config.YAML);
-            List<Map<String, Object>> maps = new ArrayList<>(config.get("texts", new ArrayList<>()));
-            Map<String, Object> map = new HashMap<>();
-            map.put("name", custom.getResponse().getInputResponse(0));
-            map.put("x", Double.parseDouble(custom.getResponse().getInputResponse(1)));
-            map.put("y", Double.parseDouble(custom.getResponse().getInputResponse(2)));
-            map.put("z", Double.parseDouble(custom.getResponse().getInputResponse(3)));
-            map.put("level", custom.getResponse().getInputResponse(4));
-            map.put("enable_tips_variable", custom.getResponse().getToggleResponse(5));
-            map.put("type", custom.getResponse().getDropdownResponse(6));
-            String type = (String) map.get("type");
-            if ("debug_text".equals(type)) {
-                map.put("scale", Double.parseDouble(custom.getResponse().getInputResponse(7)));
-                map.put("use_rotation", custom.getResponse().getToggleResponse(8));
-                map.put("duration", Double.parseDouble(custom.getResponse().getInputResponse(9)));
-                map.put("background_color", custom.getResponse().getInputResponse(10));
-                map.put("color", custom.getResponse().getInputResponse(11));
-                map.put("depth_test", custom.getResponse().getToggleResponse(12));
-                map.put("rotation_yaw", Double.parseDouble(custom.getResponse().getInputResponse(13)));
-                map.put("rotation_pitch", Double.parseDouble(custom.getResponse().getInputResponse(14)));
-                map.put("show_backface", custom.getResponse().getToggleResponse(15));
-                map.put("show_text_backface", custom.getResponse().getToggleResponse(16));
+            try {
+                Config config = new Config(FloatingTextMain.getPath() + File.separator + "config.yml", Config.YAML);
+                List<Map<String, Object>> maps = new ArrayList<>(config.get("texts", new ArrayList<>()));
+                Map<String, Object> map = new HashMap<>();
+                map.put("name", custom.getResponse().getInputResponse(0));
+                map.put("x", Double.parseDouble(custom.getResponse().getInputResponse(1)));
+                map.put("y", Double.parseDouble(custom.getResponse().getInputResponse(2)));
+                map.put("z", Double.parseDouble(custom.getResponse().getInputResponse(3)));
+                map.put("level", custom.getResponse().getInputResponse(4));
+                map.put("enable_tips_variable", custom.getResponse().getToggleResponse(5));
+                map.put("type", custom.getResponse().getDropdownResponse(6));
+                String type = (String) map.get("type");
+                if ("debug_text".equals(type)) {
+                    map.put("scale", Double.parseDouble(custom.getResponse().getInputResponse(7)));
+                    map.put("use_rotation", custom.getResponse().getToggleResponse(8));
+                    map.put("duration", Double.parseDouble(custom.getResponse().getInputResponse(9)));
+                    map.put("background_color", custom.getResponse().getInputResponse(10));
+                    map.put("color", custom.getResponse().getInputResponse(11));
+                    map.put("depth_test", custom.getResponse().getToggleResponse(12));
+                    map.put("rotation_yaw", Double.parseDouble(custom.getResponse().getInputResponse(13)));
+                    map.put("rotation_pitch", Double.parseDouble(custom.getResponse().getInputResponse(14)));
+                    map.put("show_backface", custom.getResponse().getToggleResponse(15));
+                    map.put("show_text_backface", custom.getResponse().getToggleResponse(16));
+                }
+                maps.add(map);
+                config.set("texts", maps);
+                config.save();
+                FloatingTextMain.getInstance().loadAll(false);
+                showReturnMenu(customResponsePlayer, "§a创建成功！", FormFactory::showAdminMain);
+            } catch (Exception e) {
+                FloatingTextMain.getInstance().getLogger().error("创建浮空字失败", e);
+                showReturnMenu(customResponsePlayer, "§c创建失败: " + e.getMessage(), FormFactory::showAdminMain);
             }
-            maps.add(map);
-            config.set("texts", maps);
-            config.save();
-            FloatingTextMain.getInstance().loadAll(false);
         });
         custom.onClosed(FormFactory::showAdminMain);
         custom.showToPlayer(player);
@@ -151,10 +157,7 @@ public class FormFactory {
                     break;
             }
         });
-        simple.onClosed(responsePlayer -> {
-            editPlayerCaches.remove(player);
-            showEditList(responsePlayer);
-        });
+        simple.onClosed(FormFactory::showEditList);
         simple.showToPlayer(player);
     }
 
@@ -162,21 +165,27 @@ public class FormFactory {
         AdvancedFormWindowCustom custom = new AdvancedFormWindowCustom("编辑浮空字 - 添加行文本");
         custom.addElement(new ElementInput("内容"));
         custom.onResponded((formResponseCustom, responsePlayer) -> {
-            Config config = new Config(FloatingTextMain.getPath() + File.separator + "config.yml", Config.YAML);
-            List<Map<String, Object>> maps = new ArrayList<>(config.get("texts", new ArrayList<>()));
-            Map<String, Object> map = maps.get(id);
-            if (map != null) {
-                List<String> strings = (List<String>) map.getOrDefault("lines", new ArrayList<>());
-                strings.add(formResponseCustom.getInputResponse(0));
-                map.put("lines", strings);
-                maps.set(id, map);
-                config.set("texts", maps);
-                config.save();
-                FloatingTextMain.getInstance().loadAll(false);
-                showReturnMenu(player, "§a创建成功!", subResponsePlayer -> showEditChoice(subResponsePlayer, id));
-            } else {
+            try {
+                Config config = new Config(FloatingTextMain.getPath() + File.separator + "config.yml", Config.YAML);
+                List<Map<String, Object>> maps = new ArrayList<>(config.get("texts", new ArrayList<>()));
+                Map<String, Object> map = maps.get(id);
+                if (map != null) {
+                    List<String> strings = (List<String>) map.getOrDefault("lines", new ArrayList<>());
+                    strings.add(formResponseCustom.getInputResponse(0));
+                    map.put("lines", strings);
+                    maps.set(id, map);
+                    config.set("texts", maps);
+                    config.save();
+                    FloatingTextMain.getInstance().loadAll(false);
+                    showReturnMenu(player, "§a添加成功!", subResponsePlayer -> showEditChoice(subResponsePlayer, id));
+                } else {
+                    editPlayerCaches.remove(player);
+                    showReturnMenu(player, "§cError in serializing config data!", FormFactory::showEditList);
+                }
+            } catch (Exception e) {
+                FloatingTextMain.getInstance().getLogger().error("添加浮空字文本失败", e);
                 editPlayerCaches.remove(player);
-                showReturnMenu(player, "§cError in serializing config data!", FormFactory::showEditList);
+                showReturnMenu(responsePlayer, "§c添加失败: " + e.getMessage(), FormFactory::showEditList);
             }
         });
         custom.onClosed(responsePlayer -> showEditChoice(responsePlayer, id));
@@ -222,17 +231,22 @@ public class FormFactory {
             custom.addElement(new ElementToggle("是否删除", false));
             custom.addElement(new ElementInput("文本", "", strings.get(textId)));
             custom.onResponded((formResponseCustom, customResponsePlayer) -> {
-                if (formResponseCustom.getToggleResponse(0)) {
-                    strings.remove(textId);
-                } else {
-                    strings.set(textId, formResponseCustom.getInputResponse(1));
+                try {
+                    if (formResponseCustom.getToggleResponse(0)) {
+                        strings.remove(textId);
+                    } else {
+                        strings.set(textId, formResponseCustom.getInputResponse(1));
+                    }
+                    map.put("lines", strings);
+                    maps.set(id, map);
+                    config.set("texts", maps);
+                    config.save();
+                    FloatingTextMain.getInstance().loadAll(false);
+                    showReturnMenu(player, "§a保存成功!", responsePlayer -> showEditTextSelect(responsePlayer, id));
+                } catch (Exception e) {
+                    FloatingTextMain.getInstance().getLogger().error("编辑浮空字文本失败", e);
+                    showReturnMenu(customResponsePlayer, "§c编辑失败: " + e.getMessage(), responsePlayer -> showEditTextSelect(responsePlayer, id));
                 }
-                map.put("lines", strings);
-                maps.set(id, map);
-                config.set("texts", maps);
-                config.save();
-                FloatingTextMain.getInstance().loadAll(false);
-                showReturnMenu(player, "§a保存成功!", responsePlayer -> showEditTextSelect(responsePlayer, id));
             });
             custom.onClosed(responsePlayer -> showEditTextSelect(responsePlayer, id));
             custom.showToPlayer(player);
@@ -273,50 +287,58 @@ public class FormFactory {
             custom.addElement(new ElementToggle("显示背面", (Boolean) map.getOrDefault("show_backface", true)));
             custom.addElement(new ElementToggle("显示文字背面", (Boolean) map.getOrDefault("show_text_backface", true)));
             custom.onResponded((formResponseCustom, i) -> {
-                if (custom.getResponse().getToggleResponse(1)) {
-                    maps.remove(id);
-                    editPlayerCaches.remove(player);
-                    showReturnMenu(player, "§a删除成功！", modalResponsePlayer -> showEditChoice(player, id));
-                    List<Map.Entry<Player, Integer>> entries = new ArrayList<>(editPlayerCaches.entrySet());
-                    editPlayerCaches.clear();
-                    for (Map.Entry<Player, Integer> integerPlayerEntry : entries) {
-                        int newId = integerPlayerEntry.getValue() - 1;
-                        if (newId >= 0) {
-                            editPlayerCaches.put(integerPlayerEntry.getKey(), newId);
+                try {
+                    if (custom.getResponse().getToggleResponse(1)) {
+                        maps.remove(id);
+                        editPlayerCaches.remove(player);
+                        showReturnMenu(player, "§a删除成功！", modalResponsePlayer -> showEditChoice(player, id));
+                        List<Map.Entry<Player, Integer>> entries = new ArrayList<>(editPlayerCaches.entrySet());
+                        editPlayerCaches.clear();
+                        for (Map.Entry<Player, Integer> integerPlayerEntry : entries) {
+                            int newId = integerPlayerEntry.getValue() - 1;
+                            if (newId >= 0) {
+                                editPlayerCaches.put(integerPlayerEntry.getKey(), newId);
+                            }
+                        }
+                    } else {
+                        Integer cachedId = editPlayerCaches.get(player);
+                        if (cachedId != null && cachedId.equals(id)) {
+                            map.put("name", custom.getResponse().getInputResponse(2));
+                            map.put("x", Double.parseDouble(custom.getResponse().getInputResponse(3)));
+                            map.put("y", Double.parseDouble(custom.getResponse().getInputResponse(4)));
+                            map.put("z", Double.parseDouble(custom.getResponse().getInputResponse(5)));
+                            map.put("level", custom.getResponse().getInputResponse(6));
+                            map.put("enable_tips_variable", custom.getResponse().getToggleResponse(7));
+                            map.put("type", custom.getResponse().getDropdownResponse(8));
+                            map.put("scale", Double.parseDouble(custom.getResponse().getInputResponse(9)));
+                            map.put("use_rotation", custom.getResponse().getToggleResponse(10));
+                            map.put("duration", Double.parseDouble(custom.getResponse().getInputResponse(11)));
+                            map.put("background_color", custom.getResponse().getInputResponse(12));
+                            map.put("color", custom.getResponse().getInputResponse(13));
+                            map.put("depth_test", custom.getResponse().getToggleResponse(14));
+                            map.put("rotation_yaw", Double.parseDouble(custom.getResponse().getInputResponse(15)));
+                            map.put("rotation_pitch", Double.parseDouble(custom.getResponse().getInputResponse(16)));
+                            map.put("show_backface", custom.getResponse().getToggleResponse(17));
+                            map.put("show_text_backface", custom.getResponse().getToggleResponse(18));
+                            maps.set(id, map);
+                            showReturnMenu(player, "§a保存成功！", modalResponsePlayer -> showEditChoice(player, id));
+                        } else {
+                            editPlayerCaches.remove(player);
+                            showReturnMenu(player, "§c该文本已被其他管理员删除或您已退出编辑状态！", FormFactory::showEditList);
                         }
                     }
-                } else {
-                    if (editPlayerCaches.get(player) == id) {
-                        map.put("name", custom.getResponse().getInputResponse(2));
-                        map.put("x", Double.parseDouble(custom.getResponse().getInputResponse(3)));
-                        map.put("y", Double.parseDouble(custom.getResponse().getInputResponse(4)));
-                        map.put("z", Double.parseDouble(custom.getResponse().getInputResponse(5)));
-                        map.put("level", custom.getResponse().getInputResponse(6));
-                        map.put("enable_tips_variable", custom.getResponse().getToggleResponse(7));
-                        map.put("type", custom.getResponse().getDropdownResponse(8));
-                        map.put("scale", Double.parseDouble(custom.getResponse().getInputResponse(9)));
-                        map.put("use_rotation", custom.getResponse().getToggleResponse(10));
-                        map.put("duration", Double.parseDouble(custom.getResponse().getInputResponse(11)));
-                        map.put("background_color", custom.getResponse().getInputResponse(12));
-                        map.put("color", custom.getResponse().getInputResponse(13));
-                        map.put("depth_test", custom.getResponse().getToggleResponse(14));
-                        map.put("rotation_yaw", Double.parseDouble(custom.getResponse().getInputResponse(15)));
-                        map.put("rotation_pitch", Double.parseDouble(custom.getResponse().getInputResponse(16)));
-                        map.put("show_backface", custom.getResponse().getToggleResponse(17));
-                        map.put("show_text_backface", custom.getResponse().getToggleResponse(18));
-                        maps.set(id, map);
-                        showReturnMenu(player, "§a保存成功！", modalResponsePlayer -> showEditChoice(player, id));
-                    } else {
-                        showReturnMenu(player, "§c该文本已被其他管理员删除！", FormFactory::showEditList);
-                    }
+                    config.set("texts", maps);
+                    config.save();
+                    FloatingTextMain.getInstance().loadAll(false);
+                } catch (Exception e) {
+                    FloatingTextMain.getInstance().getLogger().error("编辑浮空字基础配置失败", e);
+                    editPlayerCaches.remove(player);
+                    showReturnMenu(player, "§c编辑失败: " + e.getMessage(), FormFactory::showEditList);
                 }
-                config.set("texts", maps);
-                config.save();
-                FloatingTextMain.getInstance().loadAll(false);
             });
             custom.onClosed(customResponsePlayer -> {
-                editPlayerCaches.remove(player);
-                showEditChoice(player, id);
+                editPlayerCaches.remove(customResponsePlayer);
+                showEditChoice(customResponsePlayer, id);
             });
             custom.showToPlayer(player);
         } else {
